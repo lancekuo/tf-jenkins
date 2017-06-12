@@ -83,7 +83,7 @@ resource "aws_s3_bucket" "registry" {
 resource "null_resource" "registry_trigger" {
     triggers {
         registry_id = "${aws_s3_bucket.registry.id}"
-        bastion_ip  = "${aws_instance.bastion.public_ip}"
+        bastion_ip  = "${aws_eip.bastion.public_ip}"
     }
 
     provisioner "remote-exec" {
