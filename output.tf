@@ -8,6 +8,3 @@ output "bastion_private_ip" {
 output "node_private_ip" {
     value = "${aws_instance.node.private_ip}"
 }
-output "registry" {
-    value = "${aws_s3_bucket.registry.arn}"
-}
