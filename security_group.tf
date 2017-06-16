@@ -18,6 +18,12 @@ resource "aws_security_group" "node" {
         protocol        = "tcp"
         security_groups = ["${aws_security_group.bastion.id}"]
     }
+    ingress {
+        from_port       = 8080
+        to_port         = 8080
+        protocol        = "tcp"
+        security_groups = ["${aws_security_group.jenkins-elb.id}"]
+    }
 
     egress {
         from_port       = 0
