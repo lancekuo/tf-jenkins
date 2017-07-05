@@ -12,3 +12,7 @@ output "security_group_node_id" {
     value = "${aws_security_group.node.id}"
 }
 
+output "elb_jenkins_dns" {
+    value = "${aws_elb.jenkins.dns_name}"
+}
+
