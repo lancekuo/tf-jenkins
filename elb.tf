@@ -1,6 +1,6 @@
 resource "aws_elb" "jenkins" {
     provider = "aws.${var.region}"
-    name = "${terraform.env}-jenkins"
+    name = "${terraform.workspace}-jenkins"
 
     subnets         = ["${split(",", var.subnet_public_app)}"]
     security_groups = ["${aws_security_group.jenkins-elb.id}"]
@@ -20,7 +20,7 @@ resource "aws_elb" "jenkins" {
         interval            = 5
     }
     tags  {
-        Env     = "${terraform.env}"
+        Env     = "${terraform.workspace}"
         Project = "${var.project}"
     }
 }

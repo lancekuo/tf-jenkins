@@ -2,7 +2,7 @@ variable "vpc_default_id" {}
 
 resource "aws_security_group" "node" {
     provider    = "aws.${var.region}"
-    name        = "${terraform.env}-${var.project}-node"
+    name        = "${terraform.workspace}-${var.project}-node"
     description = "Gossip and port for docker internal"
     vpc_id      = "${var.vpc_default_id}"
 
@@ -32,15 +32,15 @@ resource "aws_security_group" "node" {
         cidr_blocks     = ["0.0.0.0/0"]
     }
     tags {
-        Name    = "${terraform.env}-${var.project}-node"
-        Env     = "${terraform.env}"
+        Name    = "${terraform.workspace}-${var.project}-node"
+        Env     = "${terraform.workspace}"
         Project = "${var.project}"
     }
 }
 
 resource "aws_security_group" "bastion" {
     provider    = "aws.${var.region}"
-    name        = "${terraform.env}-${var.project}-bastion"
+    name        = "${terraform.workspace}-${var.project}-bastion"
     description = "Access to the bastion machine"
     vpc_id      = "${var.vpc_default_id}"
 
@@ -58,15 +58,15 @@ resource "aws_security_group" "bastion" {
         cidr_blocks = ["0.0.0.0/0"]
     }
     tags {
-        Name    = "${terraform.env}-${var.project}-bastion"
-        Env     = "${terraform.env}"
+        Name    = "${terraform.workspace}-${var.project}-bastion"
+        Env     = "${terraform.workspace}"
         Project = "${var.project}"
     }
 }
 
 resource "aws_security_group" "jenkins-elb" {
     provider    = "aws.${var.region}"
-    name        = "${terraform.env}-jenkins-elb"
+    name        = "${terraform.workspace}-jenkins-elb"
     description = "Provide the access to internet to connect to internal jenkins site"
     vpc_id      = "${var.vpc_default_id}"
 
@@ -83,8 +83,8 @@ resource "aws_security_group" "jenkins-elb" {
         cidr_blocks     = ["0.0.0.0/0"]
     }
     tags {
-        Name    = "${terraform.env}-jenkins-elb"
-        Env     = "${terraform.env}"
+        Name    = "${terraform.workspace}-jenkins-elb"
+        Env     = "${terraform.workspace}"
         Project = "${var.project}"
     }
 }

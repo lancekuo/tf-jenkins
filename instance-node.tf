@@ -1,6 +1,6 @@
 resource "aws_key_pair" "node" {
     provider   = "aws.${var.region}"
-    key_name   = "${terraform.env}-${var.region}-${var.node_aws_key_name}"
+    key_name   = "${terraform.workspace}-${var.region}-${var.node_aws_key_name}"
     public_key = "${file("${path.root}${var.node_public_key_path}")}"
 }
 
@@ -9,7 +9,7 @@ data "template_file" "user-data-node" {
     count    = "${var.jenkins_node_count}"
 
     vars {
-        hostname = "${terraform.env}-${lower(var.project)}-node-${count.index}"
+        hostname = "${terraform.workspace}-${lower(var.project)}-node-${count.index}"
         domain   = "${var.domain}"
     }
 }
@@ -43,8 +43,8 @@ resource "aws_instance" "node" {
         ]
     }
     tags  {
-        Name    = "${terraform.env}-${lower(var.project)}-node-${count.index}"
-        Env     = "${terraform.env}"
+        Name    = "${terraform.workspace}-${lower(var.project)}-node-${count.index}"
+        Env     = "${terraform.workspace}"
         Project = "${var.project}"
         Role    = "node"
         Index   = "${count.index}"
