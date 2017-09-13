@@ -1,8 +1,8 @@
 resource "aws_elb" "jenkins" {
-    provider = "aws.${var.region}"
+    provider = "aws.${var.aws_region}"
     name = "${terraform.workspace}-jenkins"
 
-    subnets         = ["${split(",", var.subnet_public_app)}"]
+    subnets         = ["${var.subnet_public_app_ids}"]
     security_groups = ["${aws_security_group.jenkins-elb.id}"]
     instances       = ["${aws_instance.node.*.id}"]
 

@@ -1,12 +1,12 @@
 resource "aws_key_pair" "node" {
-    provider   = "aws.${var.region}"
-    key_name   = "${terraform.workspace}-${var.region}-${var.node_aws_key_name}"
-    public_key = "${file("${path.root}${var.node_public_key_path}")}"
+    provider   = "aws.${var.aws_region}"
+    key_name   = "${terraform.workspace}-${var.aws_region}-${var.rsa_key_node["aws_key_name"]}"
+    public_key = "${file("${path.root}${var.rsa_key_node["public_key_path"]}")}"
 }
 
 data "template_file" "user-data-node" {
     template = "${file("${path.module}/cloud-init/hostname")}"
-    count    = "${var.jenkins_node_count}"
+    count    = "${var.count_jenkins_node}"
 
     vars {
         hostname = "${terraform.workspace}-${lower(var.project)}-node-${count.index}"
@@ -14,13 +14,15 @@ data "template_file" "user-data-node" {
     }
 }
 resource "aws_instance" "node" {
-    provider               = "aws.${var.region}"
-    count                  = "${var.jenkins_node_count}"
-    instance_type          = "t2.small"
-    ami                    = "${var.ami}"
+    provider               = "aws.${var.aws_region}"
+    count                  = "${var.count_jenkins_node}"
+    instance_type          = "${var.instance_type_node}"
+    ami                    = "${var.aws_ami_docker}"
     key_name               = "${aws_key_pair.node.id}"
     vpc_security_group_ids = ["${aws_security_group.node.id}"]
     subnet_id              = "${element(split(",", var.subnet_public_app), (count.index))}"
+    subnet_id              = "${element(var.subnet_public_app_ids, (count.index))}"
+
 
     root_block_device = {
         volume_size = 20
@@ -29,12 +31,12 @@ resource "aws_instance" "node" {
     connection {
         bastion_host        = "${aws_eip.bastion.public_ip}"
         bastion_user        = "ubuntu"
-        bastion_private_key = "${file("${path.root}${var.bastion_private_key_path}")}"
+        bastion_private_key = "${file("${path.root}${var.rsa_key_bastion["private_key_path"]}")}"
 
         type                = "ssh"
         user                = "ubuntu"
         host                = "${self.private_ip}"
-        private_key         = "${file("${path.root}${var.node_private_key_path}")}"
+        private_key         = "${file("${path.root}${var.rsa_key_node["private_key_path"]}")}"
     }
 
     provisioner "remote-exec" {
@@ -50,7 +52,4 @@ resource "aws_instance" "node" {
         Index   = "${count.index}"
     }
     user_data  = "${element(data.template_file.user-data-node.*.rendered, count.index)}"
-    depends_on = [
-        "aws_instance.bastion"
-    ]
 }

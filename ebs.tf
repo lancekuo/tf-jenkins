@@ -1,5 +1,5 @@
 resource "aws_volume_attachment" "ebs_att" {
-    provider     = "aws.${var.region}"
+    provider     = "aws.${var.aws_region}"
     device_name  = "/dev/xvdg"
     volume_id    = "${aws_ebs_volume.storage-jenkins.id}"
     instance_id  = "${element(aws_instance.node.*.id, 0)}"
@@ -7,8 +7,8 @@ resource "aws_volume_attachment" "ebs_att" {
     force_detach = false
 }
 resource "aws_ebs_volume" "storage-jenkins" {
-    provider          = "aws.${var.region}"
-    availability_zone = "${element(split(",", var.availability_zones), (length(aws_instance.node.*.id)-1))}"
+    provider          = "aws.${var.aws_region}"
+    availability_zone = "${element(var.availability_zones, (length(aws_instance.node.*.id)-1))}"
     size              = 50
     lifecycle         = {
         ignore_changes  = "*"
