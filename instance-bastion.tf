@@ -22,7 +22,7 @@ resource "aws_instance" "bastion" {
     subnet_id              = "${element(var.subnet_public_bastion_ids, var.count_bastion_subnet_on_public)}"
 
     tags  {
-        Name           = "${terraform.workspace}-${lower(var.project)}-bastion-${count.index}"
+        Name           = "${terraform.workspace}-bastion-${count.index}"
         Env            = "${terraform.workspace}"
         Project        = "${var.project}"
         Role           = "bastion"

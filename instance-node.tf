@@ -44,7 +44,7 @@ resource "aws_instance" "node" {
         ]
     }
     tags  {
-        Name    = "${terraform.workspace}-${lower(var.project)}-node-${count.index}"
+        Name    = "${terraform.workspace}-node-${count.index}"
         Env     = "${terraform.workspace}"
         Project = "${var.project}"
         Role    = "node"

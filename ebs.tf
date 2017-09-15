@@ -30,8 +30,8 @@ resource "null_resource" "ebs_trigger" {
     provisioner "remote-exec" {
         inline = [
             "if [ -d /opt/jenkins/ ];then echo \"The folder exists.\";else sudo mkdir /opt/jenkins;echo \"Mount point created.\";fi",
-#            "sudo parted /dev/xvdg --script -- mklabel msdos mkpart primary ext4 0 -1",
-#            "sudo mkfs.ext4 -F /dev/xvdg1",
+            "sudo parted /dev/xvdg --script -- mklabel msdos mkpart primary ext4 0 -1",
+            "sudo mkfs.ext4 -F /dev/xvdg1",
             "if ! grep -e \"$$(sudo file -s /dev/xvdg1|awk -F\\  '{print $8}')    /opt/jenkins\" /etc/fstab 1> /dev/null;then echo \"`sudo file -s /dev/xvdg1|awk -F\\  '{print $8}'`    /opt/jenkins    ext4    defaults,errors=remount-ro    0    0\"| sudo tee -a /etc/fstab;else echo 'Fstab has the mount point'; fi ",
             "if grep -qs '/opt/jenkins' /proc/mounts; then echo \"/opt/jenkins has mounted.\"; else sudo mount `sudo file -s /dev/xvdg1|awk -F\\  '{print $8}'` /opt/jenkins; fi",
         ]
