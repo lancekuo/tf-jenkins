@@ -19,7 +19,6 @@ resource "aws_instance" "node" {
     ami                    = "${var.aws_ami_docker}"
     key_name               = "${aws_key_pair.node.id}"
     vpc_security_group_ids = ["${aws_security_group.node.id}"]
-    subnet_id              = "${element(split(",", var.subnet_public_app), (count.index))}"
     subnet_id              = "${element(var.subnet_public_app_ids, (count.index))}"
 
 
