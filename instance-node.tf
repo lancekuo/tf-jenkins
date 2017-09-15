@@ -1,9 +1,3 @@
-resource "aws_key_pair" "node" {
-    provider   = "aws.${var.aws_region}"
-    key_name   = "${terraform.workspace}-${var.aws_region}-${var.rsa_key_node["aws_key_name"]}"
-    public_key = "${file("${path.root}${var.rsa_key_node["public_key_path"]}")}"
-}
-
 data "template_file" "user-data-node" {
     template = "${file("${path.module}/cloud-init/hostname")}"
     count    = "${var.count_jenkins_node}"
@@ -12,6 +6,11 @@ data "template_file" "user-data-node" {
         hostname = "${terraform.workspace}-${lower(var.project)}-node-${count.index}"
         domain   = "${var.domain}"
     }
+}
+resource "aws_key_pair" "node" {
+    provider   = "aws.${var.aws_region}"
+    key_name   = "${terraform.workspace}-${var.aws_region}-${var.rsa_key_node["aws_key_name"]}"
+    public_key = "${file("${path.root}${var.rsa_key_node["public_key_path"]}")}"
 }
 resource "aws_instance" "node" {
     provider               = "aws.${var.aws_region}"
