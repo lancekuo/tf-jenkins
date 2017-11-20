@@ -24,6 +24,7 @@ resource "aws_instance" "node" {
 
     root_block_device = {
         volume_size = 20
+        volume_type = "gp2"
     }
 
     connection {

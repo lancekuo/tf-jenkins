@@ -14,6 +14,8 @@ resource "aws_ebs_volume" "storage-jenkins" {
         ignore_changes  = "*"
         prevent_destroy = true
     }
+    type              = "gp2"
+
     tags  {
         Name    = "${terraform.workspace}-${lower(var.project)}-storage-jenkins"
         Env     = "${terraform.workspace}"
@@ -29,11 +31,11 @@ resource "null_resource" "ebs_trigger" {
 
     provisioner "remote-exec" {
         inline = [
-            "if [ -d /opt/jenkins/ ];then echo \"The folder exists.\";else sudo mkdir /opt/jenkins;sudo chown -R ubuntu:ubuntu /opt/jenkins;sudo chmod 777 /opt/jenkins;echo \"Mount point created.\";fi",
-            "if [ ! -b /dev/xvdg1 ]; then sudo parted /dev/xvdg --script -- mklabel msdos mkpart primary ext4 0 -1;fi",
-            "if [ ! \"$(sudo lsblk --fs /dev/xvdg1 --nodeps -o FSTYPE -t -n)\" = \"ext4\" ]]; then sudo mkfs.ext4 -F /dev/xvdg1;fi",
-            "if ! grep -e \"$$(sudo file -s /dev/xvdg1|awk -F\\  '{print $8}')    /opt/jenkins\" /etc/fstab 1> /dev/null;then echo \"`sudo file -s /dev/xvdg1|awk -F\\  '{print $8}'`    /opt/jenkins    ext4    defaults,errors=remount-ro    0    0\"| sudo tee -a /etc/fstab;else echo 'Fstab has the mount point'; fi ",
-            "if grep -qs '/opt/jenkins' /proc/mounts; then echo \"/opt/jenkins has mounted.\"; else sudo mount `sudo file -s /dev/xvdg1|awk -F\\  '{print $8}'` /opt/jenkins; fi",
+            "echo '====== Creating Mount point =====';if [ -d /opt/jenkins/ ];then echo \"=> The mount endpoint has existed.\";else sudo mkdir /opt/jenkins;sudo chown -R ubuntu:ubuntu /opt/jenkins;sudo chmod 777 /opt/jenkins;echo \"Mount point created.\";fi",
+            "echo '====== Creating Partition =====';if [ ! -b /dev/xvdg1 ]; then sudo parted /dev/xvdg --script -- mklabel msdos mkpart primary ext4 0 -1;else echo '=> Partition has created, skipping this step...';fi",
+            "echo '====== Making File system =====';if [ ! \"$(sudo lsblk --fs /dev/xvdg1 --nodeps -o FSTYPE -t -n)\" = \"ext4\" ]]; then sudo mkfs.ext4 -F /dev/xvdg1;else echo '=> File system has created, skipping this step...';fi",
+            "echo '====== Updating fstab file =====';if ! grep -e \"$$(sudo file -s /dev/xvdg1|awk -F\\  '{print $8}')    /opt/jenkins\" /etc/fstab 1> /dev/null;then echo \"`sudo file -s /dev/xvdg1|awk -F\\  '{print $8}'`    /opt/jenkins    ext4    defaults,errors=remount-ro    0    0\"| sudo tee -a /etc/fstab;else echo '=> Fstab has updated, no change in this step...'; fi ",
+            "echo '====== Mounting Volume =====';if grep -qs '/opt/jenkins' /proc/mounts; then echo \"=> /opt/jenkins has mounted.\"; else sudo mount `sudo file -s /dev/xvdg1|awk -F\\  '{print $8}'` /opt/jenkins; fi",
         ]
         connection {
             bastion_host        = "${aws_eip.bastion.public_ip}"
