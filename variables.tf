@@ -22,9 +22,3 @@ variable "rsa_key_node"                   {type="map"}
 variable "mount_point"                    {}
 variable "device_file"                    {}
 variable "partition_file"                 {}
-
-provider "aws" {
-    alias   = "${var.aws_region}"
-    region  = "${var.aws_region}"
-    profile = "${var.aws_profile}"
-}
