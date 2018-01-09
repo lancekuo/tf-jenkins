@@ -38,7 +38,8 @@ resource "aws_instance" "node" {
 
     provisioner "remote-exec" {
         inline = [
-            "echo 'Hello World.'"
+            "echo 'Pulling Docker Compose file for Jeknins from github...'",
+            "git clone https://github.com/lancekuo/jenkins.git"
         ]
     }
     tags  {
