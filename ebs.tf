@@ -34,6 +34,8 @@ resource "null_resource" "ebs_trigger" {
             "echo '====== Making File system =====';if [ ! \"$(sudo lsblk --fs ${var.partition_file} --nodeps -o FSTYPE -t -n)\" = \"ext4\" ]]; then sudo mkfs.ext4 -F ${var.partition_file};else echo '=> File system has created, skipping this step...';fi",
             "echo '====== Updating fstab file =====';if ! grep -e \"$$(sudo file -s ${var.partition_file}|awk -F\\  '{print $8}')    ${var.mount_point}\" /etc/fstab 1> /dev/null;then echo \"`sudo file -s ${var.partition_file}|awk -F\\  '{print $8}'`    ${var.mount_point}    ext4    defaults,errors=remount-ro    0    0\"| sudo tee -a /etc/fstab;else echo '=> Fstab has updated, no change in this step...'; fi ",
             "echo '====== Mounting Volume =====';if grep -qs '${var.mount_point}' /proc/mounts; then echo \"=> ${var.mount_point} has mounted.\"; else sudo mount `sudo file -s ${var.partition_file}|awk -F\\  '{print $8}'` ${var.mount_point}; fi",
+            "echo '====== Update Folder Permission ====='",
+            "sudo chown ubuntu:ubuntu /opt/jenkins",
         ]
         connection {
             bastion_host        = "${aws_eip.bastion.public_ip}"
