@@ -1,3 +1,18 @@
+resource "aws_route53_record" "docker_host" {
+    zone_id  = "${var.route53_internal_zone_id}"
+    name     = "docker-host.${var.project}.internal"
+    type     = "A"
+    ttl      = "300"
+    records  = ["${aws_instance.node.0.private_ip}"]
+}
+resource "aws_route53_record" "test_host" {
+    zone_id  = "${var.route53_internal_zone_id}"
+    name     = "test-host.${var.project}.internal"
+    type     = "A"
+    ttl      = "300"
+    records  = ["${aws_instance.node.0.private_ip}"]
+}
+
 data "template_file" "user-data-node" {
     template = "${file("${path.module}/cloud-init/hostname")}"
     count    = "${var.count_jenkins_node}"

@@ -22,3 +22,5 @@ variable "rsa_key_node"                   {type="map"}
 variable "mount_point"                    {}
 variable "device_file"                    {}
 variable "partition_file"                 {}
+
+variable "route53_internal_zone_id"       {}
