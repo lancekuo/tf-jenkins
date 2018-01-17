@@ -1,7 +1,7 @@
 resource "aws_volume_attachment" "ebs_att" {
     device_name  = "${var.device_file}"
     volume_id    = "${aws_ebs_volume.storage-jenkins.id}"
-    instance_id  = "${element(aws_instance.node.*.id, 0)}"
+    instance_id  = "${aws_instance.node.0.id}"
     skip_destroy = true
     force_detach = false
 }
