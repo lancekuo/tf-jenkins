@@ -2,7 +2,7 @@ resource "aws_elb" "jenkins" {
     name = "${terraform.workspace}-jenkins"
 
     subnets         = ["${var.subnet_public_app_ids}"]
-    security_groups = ["${aws_security_group.jenkins-elb.id}"]
+    security_groups = ["${aws_security_group.jenkins-elb.id}", "${aws_security_group.github-webhook.id}"]
     instances       = ["${aws_instance.node.*.id}"]
 
     listener {

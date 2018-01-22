@@ -116,3 +116,32 @@ resource "aws_security_group" "jenkins-elb" {
         Project = "${var.project}"
     }
 }
+resource "aws_security_group" "github-webhook" {
+    name        = "${terraform.workspace}-github-webhook"
+    description = "Provide the access to Github to be able to send POST request to Jenkins server"
+    vpc_id      = "${var.vpc_default_id}"
+
+    ingress {
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
+        cidr_blocks = ["${split(",",data.external.github.result.data)}"]
+    }
+    ingress {
+        from_port   = 443
+        to_port     = 443
+        protocol    = "tcp"
+        cidr_blocks = ["${split(",",data.external.github.result.data)}"]
+    }
+    egress {
+        from_port       = 0
+        to_port         = 0
+        protocol        = "-1"
+        cidr_blocks     = ["0.0.0.0/0"]
+    }
+    tags {
+        Name    = "${terraform.workspace}-github-webhook"
+        Env     = "${terraform.workspace}"
+        Project = "${var.project}"
+    }
+}
