@@ -6,7 +6,7 @@ resource "aws_volume_attachment" "ebs_att" {
     force_detach = false
 }
 resource "aws_ebs_volume" "storage-jenkins" {
-    availability_zone = "${element(var.availability_zones, (length(aws_instance.node.*.id)-1))}"
+    availability_zone = "${element(var.availability_zones, 0)}"
     size              = 50
     type              = "gp2"
     lifecycle         = {
